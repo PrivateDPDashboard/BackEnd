@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Vocabulary.Database.Entities
+namespace Sale.Database.Entities
 {
     public class SaleDbContext : IdentityDbContext<ApplicationUser>
     {
@@ -10,7 +10,7 @@ namespace Vocabulary.Database.Entities
         public SaleDbContext(DbContextOptions<SaleDbContext> options) : base(options) { }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
-            //optionsBuilder.UseSqlServer("Server=MAJD-PC;Database=Vocabulary;Trusted_Connection=True;TrustServerCertificate=True");
+            //optionsBuilder.UseSqlServer("Server=MAJD-PC;Database=Sales;Trusted_Connection=True;TrustServerCertificate=True");
         }
 
     }

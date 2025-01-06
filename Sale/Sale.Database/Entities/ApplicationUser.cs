@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Vocabulary.Database.Entities
+namespace Sale.Database.Entities
 {
     public class ApplicationUser : IdentityUser
     {

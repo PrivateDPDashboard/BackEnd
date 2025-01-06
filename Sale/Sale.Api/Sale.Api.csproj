@@ -1,17 +1,33 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>disable</Nullable>
+		<ImplicitUsings>disable</ImplicitUsings>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11" />
+		<PackageReference Include="RestSharp" Version="112.1.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Sale.Database\Sale.Database.csproj" />
+		<ProjectReference Include="..\Sale.Security\Sale.Security.csproj" />
+		<ProjectReference Include="..\Sale.ServiceLayer\Sale.ServiceLayer.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Reference Include="CoffeeCCode.Models">
+			<HintPath>D:\Projects\References\CoffeeCCode.Models.dll</HintPath>
+		</Reference>
+		<Reference Include="CoffeeCode.DataBase">
+			<HintPath>D:\Projects\References\CoffeeCode.DataBase.dll</HintPath>
+		</Reference>
+		<Reference Include="CoffeeCode.ServiceLayer">
+			<HintPath>D:\Projects\References\CoffeeCode.ServiceLayer.dll</HintPath>
+		</Reference>
+	</ItemGroup>
 
 </Project>
