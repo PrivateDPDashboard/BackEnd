@@ -4,14 +4,19 @@
 
 /Sale/.vs/Sale
 /Sale/Sale.Api/obj
+/Sale/Sale.Api/bin
+
 /Sale/Sale.DataAccess/obj
-/Sale/Sale.Database/bin/Debug/net8.0
+/Sale/Sale.DataAccess/bin
+
 /Sale/Sale.Database/obj
+/Sale/Sale.Database/bin
+
 /Sale/Sale.Model/obj
+/Sale/Sale.Model/bin
+
 /Sale/Sale.Security/obj
+/Sale/Sale.Security/bin
+
 /Sale/Sale.ServiceLayer/obj
-/Sale/Sale.ServiceLayer/bin/Debug/net8.0
-/Sale/Sale.Security/bin/Debug/net8.0
-/Sale/Sale.Model/bin/Debug/net8.0
-/Sale/Sale.DataAccess/bin/Debug/net8.0
-/Sale/Sale.Api/bin/Debug/net8.0
+/Sale/Sale.ServiceLayer/bin
