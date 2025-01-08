@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
+using Sale.Database.Entities;
+using Sale.Model.Base;
 
-namespace Vocabulary.ServiceLayer.MappingProfiles
+namespace Sale.ServiceLayer.MappingProfiles
 {
     internal class BasicProfile : Profile
     {
-        public BasicProfile()
-        {
-            //CreateMap<LanguageModel, Language>().ReverseMap();
+        public BasicProfile() {
+            CreateMap<ApplicationUserModel, ApplicationUser>().ReverseMap();
         }
     }
 }

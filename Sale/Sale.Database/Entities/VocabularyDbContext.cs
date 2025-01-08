@@ -10,7 +10,7 @@ namespace Sale.Database.Entities
         public SaleDbContext(DbContextOptions<SaleDbContext> options) : base(options) { }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
-            //optionsBuilder.UseSqlServer("Server=MAJD-PC;Database=Sales;Trusted_Connection=True;TrustServerCertificate=True");
+            optionsBuilder.UseSqlServer("Server=MAJD-PC;Database=Sales;Trusted_Connection=True;TrustServerCertificate=True");
         }
 
     }

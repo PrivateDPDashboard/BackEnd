@@ -15,7 +15,7 @@ using Sale.Database.Entities;
 using Sale.Security;
 using Sale.ServiceLayer;
 
-namespace Vocabulary.Api
+namespace Sale.Api
 {
     public class Program
     {
@@ -67,7 +67,7 @@ namespace Vocabulary.Api
                     ValidateAudience = true,
                     ValidAudience = builder.Configuration["JWT:ValidAudience"],
                     ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"] ?? ""))
                 };
                 options.Events = new JwtBearerEvents() {
                     OnMessageReceived = (context) => {
@@ -85,7 +85,7 @@ namespace Vocabulary.Api
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c => {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Vocabulary API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Sales API", Version = "v1" });
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme() {
                     Name = "Authorization",
                     Type = SecuritySchemeType.ApiKey,
@@ -127,7 +127,7 @@ namespace Vocabulary.Api
                     var result = userManager.CreateAsync(identityUser, "Admin@123").Result;
                     if (result.Succeeded) {
                         var claims = Claims.GetAll();
-                        var userClaimResult = userManager.AddClaimsAsync(identityUser, claims.Select(e => new System.Security.Claims.Claim(e.ClaimType, e.ClaimValue))).Result;
+                        _ = userManager.AddClaimsAsync(identityUser, claims.Select(e => new System.Security.Claims.Claim(e.ClaimType, e.ClaimValue))).Result;
                     }
                 }
             }

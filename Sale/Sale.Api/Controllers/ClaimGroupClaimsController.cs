@@ -6,24 +6,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using Sale.Database.Entities;
-using Sale.Api.ApiModel.User.UserClaim;
+using System.Text;
 using Sale.Model.Base;
 using Microsoft.EntityFrameworkCore;
-using Sale.Api.ApiModel.Role.RoleClaim;
 
 namespace Sale.Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
     [Authorize]
-    public class RoleClaimsController(RoleManager<IdentityRole> roleManager) : ControllerBase
+    public class ClaimGroupClaimsController(RoleManager<IdentityRole> roleManager) : ControllerBase
     {
         [HttpGet]
-        [Route("GetByRoleName/{roleName}")]
-        public async Task<IActionResult> GetByUserId(string roleName) {
+        [Route("GetByClaimGroupName/{claimGroupName}")]
+        public async Task<IActionResult> GetByUserId(string claimGroupName) {
             try {
-                var role = await roleManager.Roles.FirstOrDefaultAsync(e => e.Name == roleName);
+                var role = await roleManager.Roles.FirstOrDefaultAsync(e => e.Name == claimGroupName);
                 if (role == null)
                     return BadRequest();
 
@@ -36,13 +34,12 @@ namespace Sale.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(List<RoleClaimCreateRequestModel> requestModel) {
+        public async Task<IActionResult> Post(string claimGroupName, List<ClaimModel> requestModel) {
             try {
-                var roleName = requestModel.FirstOrDefault()?.RoleName;
-                if (string.IsNullOrWhiteSpace(roleName))
-                    return BadRequest("Invalid RoleName submitted");
+                if (string.IsNullOrWhiteSpace(claimGroupName))
+                    return BadRequest("Invalid claim group name submitted");
 
-                var role = await roleManager.FindByNameAsync(roleName);
+                var role = await roleManager.FindByNameAsync(claimGroupName);
                 if (role == null)
                     return BadRequest();
 
@@ -58,38 +55,51 @@ namespace Sale.Api.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put(List<RoleClaimCreateRequestModel> requestModel) {
+        public async Task<IActionResult> Put(string claimGroupName, List<ClaimModel> requestModel) {
             try {
-                var roleName = requestModel.FirstOrDefault()?.RoleName;
-                if (string.IsNullOrWhiteSpace(roleName))
-                    return BadRequest("Invalid RoleName submitted");
+                if (string.IsNullOrWhiteSpace(claimGroupName))
+                    return BadRequest("Invalid claim group name submitted");
 
-                var role = await roleManager.FindByNameAsync(roleName);
+                var errors = new StringBuilder();
+
+                var role = await roleManager.FindByNameAsync(claimGroupName);
                 if (role == null)
                     return BadRequest();
 
                 var existingClaims = await roleManager.GetClaimsAsync(role);
                 foreach (var existClaim in existingClaims) {
-                    await roleManager.RemoveClaimAsync(role, existClaim);
+                    var result = await roleManager.RemoveClaimAsync(role, existClaim);
+                    if (!result.Succeeded) {
+                        errors.Append(string.Join(Environment.NewLine, result.Errors.Select(e => e.Description)));
+                    }
                 }
+
+                if (errors.Length > 0)
+                    return BadRequest(new { message = errors.ToString() });
+
 
                 var newClaims = requestModel.Select(e => new Claim(e.ClaimType, e.ClaimValue));
                 foreach (var claim in newClaims) {
                     var result = await roleManager.AddClaimAsync(role, claim);
+                    if (!result.Succeeded) {
+                        errors.Append(string.Join(Environment.NewLine, result.Errors.Select(e => e.Description)));
+                    }
                 }
-                return Ok();
 
-                //return BadRequest(new { message = string.Join(Environment.NewLine, result.Errors.Select(e => e.Description)) });
+                if (errors.Length > 0)
+                    return BadRequest(new { message = errors.ToString() });
+
+                return Ok();
             } catch (Exception ex) {
                 return BadRequest(new { message = ex.GetBaseException().Message });
             }
         }
 
         [HttpDelete]
-        [Route("{roleName}")]
-        public async Task<IActionResult> Delete(string roleName) {
+        [Route("{claimGroupName}")]
+        public async Task<IActionResult> Delete(string claimGroupName) {
             try {
-                var role = await roleManager.FindByNameAsync(roleName);
+                var role = await roleManager.FindByNameAsync(claimGroupName);
                 if (role == null)
                     return BadRequest();
 

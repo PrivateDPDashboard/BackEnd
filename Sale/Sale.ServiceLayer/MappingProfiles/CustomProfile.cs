@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 
-namespace Vocabulary.ServiceLayer.MappingProfiles
+namespace Sale.ServiceLayer.MappingProfiles
 {
     internal class CustomProfile : Profile
     {

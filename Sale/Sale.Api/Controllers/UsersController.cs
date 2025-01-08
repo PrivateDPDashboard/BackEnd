@@ -13,6 +13,7 @@ using CoffeeCCode.Models.DataTables;
 using Microsoft.AspNetCore.Authorization;
 using System.Text;
 using Sale.Security;
+using Sale.Api.ApiModel;
 
 namespace Sale.Api.Controllers
 {
@@ -23,26 +24,22 @@ namespace Sale.Api.Controllers
     {
         [HttpPost("GetUsers")]
         [Authorize(Policy = Policies.ManageUsersPolicy)]
-        public async Task<IActionResult> GetUsers(UserGetRequestModel requestModel)
-        {
-            try
-            {
+        public async Task<IActionResult> GetUsers(DataTableGetRequestModel requestModel) {
+            try {
                 var dataTableParamResult = new DataTableParamResult(requestModel.DataTableParam);
 
                 var query = userManager.Users.AsNoTracking();
 
                 var totalRecord = query.Count();
 
-                if (!string.IsNullOrWhiteSpace(dataTableParamResult.SearchValue))
-                {
+                if (!string.IsNullOrWhiteSpace(dataTableParamResult.SearchValue)) {
                     query = query.Where(e =>
                         e.UserName.Contains(dataTableParamResult.SearchValue) ||
                         e.Email.Contains(dataTableParamResult.SearchValue)
                     );
                 }
                 var filteredRecord = query.Count();
-                switch (dataTableParamResult.SortColumn)
-                {
+                switch (dataTableParamResult.SortColumn) {
                     case 1:
                         query = dataTableParamResult.SortDirection == "asc" ? query.OrderBy(e => e.UserName) : query.OrderByDescending(e => e.UserName);
                         break;
@@ -55,46 +52,37 @@ namespace Sale.Api.Controllers
                 }
 
                 var users = await query.Skip(dataTableParamResult.Skip).Take(dataTableParamResult.PageSize)
-                    .Select(e => new ApplicationUserModel
-                    {
+                    .Select(e => new ApplicationUserModel {
                         Id = e.Id,
                         UserName = e.UserName,
                         Email = e.Email,
-                        RoleName = "Admin"
+                        PermissionDescription = e.PermissionDescription
                     }).ToListAsync();
 
-                return Ok(new DataTableResult<List<ApplicationUserModel>>
-                {
+                return Ok(new DataTableResult<List<ApplicationUserModel>> {
                     data = users,
                     recordsFiltered = filteredRecord,
                     recordsTotal = totalRecord
                 });
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 return BadRequest(new { message = ex.GetBaseException().Message });
             }
         }
 
         [HttpGet("GetById/{id}")]
         [Authorize(Policy = Policies.ManageUsersPolicy)]
-        public async Task<IActionResult> GetById(string id)
-        {
-            try
-            {
+        public async Task<IActionResult> GetById(string id) {
+            try {
                 var user = await userManager.FindByIdAsync(id);
                 if (user == null)
                     return BadRequest(new { message = $"Invalid user Id {id}" });
 
-                return Ok(new ApplicationUserModel()
-                {
+                return Ok(new ApplicationUserModel() {
                     Id = user.Id,
                     Email = user.Email,
                     UserName = user.UserName
                 });
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 return BadRequest(new { message = ex.GetBaseException().Message });
             }
         }
@@ -102,36 +90,29 @@ namespace Sale.Api.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("Register")]
-        public async Task<IActionResult> Register([FromForm] UserRegisterRequestModel userRegisterRequestModel)
-        {
-            try
-            {
+        public async Task<IActionResult> Register([FromForm] UserRegisterRequestModel userRegisterRequestModel) {
+            try {
                 if (userRegisterRequestModel == null)
                     return BadRequest(new { message = "Invalid Registration" });
 
-                var identityUser = new ApplicationUser
-                {
+                var identityUser = new ApplicationUser {
                     UserName = userRegisterRequestModel.UserName,
                     Email = userRegisterRequestModel.Email
                 };
 
                 var result = await userManager.CreateAsync(identityUser, userRegisterRequestModel.Password);
-                if (result.Succeeded)
-                {
+                if (result.Succeeded) {
                     return Ok(new { message = "User Registration Successful" });
                 }
 
                 var errorMessage = new StringBuilder();
-                foreach (IdentityError error in result.Errors)
-                {
+                foreach (IdentityError error in result.Errors) {
                     errorMessage.Append(error.Description);
                     errorMessage.Append("\n");
                 }
 
                 return BadRequest(new { message = errorMessage });
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 return BadRequest(new { message = ex.GetBaseException().Message });
             }
         }
@@ -140,10 +121,8 @@ namespace Sale.Api.Controllers
         [HttpPut]
         [Route("UpdateUser")]
         [Authorize(Policy = Policies.ManageUsersPolicy)]
-        public async Task<IActionResult> Put([FromForm] UserModifyRequestModel userModifyRequestModel)
-        {
-            try
-            {
+        public async Task<IActionResult> Put([FromForm] UserModifyRequestModel userModifyRequestModel) {
+            try {
                 if (userModifyRequestModel == null)
                     return BadRequest(new { message = "Invalid Registration" });
 
@@ -155,20 +134,16 @@ namespace Sale.Api.Controllers
                 user.Email = userModifyRequestModel.Email;
 
                 var result = await userManager.UpdateAsync(user);
-                if (!result.Errors.IsNullOrEmpty())
-                {
+                if (!result.Errors.IsNullOrEmpty()) {
                     return BadRequest(new { message = string.Join(Environment.NewLine, result.Errors.Select(e => e.Description)) });
                 }
 
-                return Ok(new ApplicationUserModel
-                {
+                return Ok(new ApplicationUserModel {
                     Id = user.Id,
                     Email = user.Email,
                     UserName = user.UserName
                 });
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 return BadRequest(new { message = ex.GetBaseException().Message });
             }
         }
@@ -176,10 +151,8 @@ namespace Sale.Api.Controllers
         [HttpPost]
         [Route("ResetPassword")]
         [Authorize(Policy = Policies.ResetUserPasswordPolicy)]
-        public async Task<IActionResult> ChangeUserStatus(UserResetPasswordRequestModel requestModel)
-        {
-            try
-            {
+        public async Task<IActionResult> ChangeUserStatus(UserResetPasswordRequestModel requestModel) {
+            try {
                 var user = await userManager.FindByIdAsync(requestModel.ApplicationUserId);
                 if (user == null)
                     return BadRequest(new { message = "Can't find a user, please Contact System Administrator" });
@@ -190,9 +163,7 @@ namespace Sale.Api.Controllers
                     return BadRequest(result.Errors.FirstOrDefault()?.Description);
 
                 return Ok();
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 return BadRequest(new { message = ex.GetBaseException().Message });
             }
         }

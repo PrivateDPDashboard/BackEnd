@@ -1,8 +1,8 @@
 ﻿using CoffeeCCode.Models.DataTables;
 
-namespace Sale.Api.ApiModel.User
+namespace Sale.Api.ApiModel
 {
-    public class UserGetRequestModel
+    public class DataTableGetRequestModel
     {
         public DataTableParameter DataTableParam { get; set; }
     }

@@ -2,7 +2,7 @@
 {
     public class RoleModifyRequestModel
     {
-        public string RoleName { get; set; }
-        public string UpdatedRoleName { get; set; }
+        public string ClaimGroupName { get; set; }
+        public string UpdatedClaimGroupName { get; set; }
     }
 }

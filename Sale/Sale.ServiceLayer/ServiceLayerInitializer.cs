@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using AutoMapper;
 using CoffeeCode.DataBase.Base.Repository;
-using CoffeeCode.DataBase.Extensions;
 using CoffeeCode.ServiceLayer.Base;
 using Microsoft.Extensions.DependencyInjection;
-using Vocabulary.ServiceLayer.MappingProfiles;
+using Sale.ServiceLayer.MappingProfiles;
 
 namespace Sale.ServiceLayer
 {

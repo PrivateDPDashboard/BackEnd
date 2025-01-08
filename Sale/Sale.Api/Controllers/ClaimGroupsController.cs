@@ -7,16 +7,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Sale.Api.ApiModel;
 using Sale.Api.ApiModel.Role;
-using Sale.Api.ApiModel.User;
-using Sale.Model.Base;
 
 namespace Sale.Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
     [Authorize]
-    public class RolesController(RoleManager<IdentityRole> roleManager) : ControllerBase
+    public class ClaimGroupsController(RoleManager<IdentityRole> roleManager) : ControllerBase
     {
 
         [HttpGet]
@@ -29,9 +28,9 @@ namespace Sale.Api.Controllers
             }
         }
 
-        [HttpPost("GetRoles")]
+        [HttpPost("GetClaimGroups")]
         //[Authorize(Policy = Policies.ManageUsersPolicy)]
-        public async Task<IActionResult> GetUsers(UserGetRequestModel requestModel) {
+        public async Task<IActionResult> GetClaimGroups(DataTableGetRequestModel requestModel) {
             try {
                 var dataTableParamResult = new DataTableParamResult(requestModel.DataTableParam);
 
@@ -67,24 +66,24 @@ namespace Sale.Api.Controllers
         }
 
         [HttpGet]
-        [Route("Get/{roleName}")]
-        public async Task<IActionResult> Get(string roleName) {
+        [Route("Get/{claimGroupName}")]
+        public async Task<IActionResult> Get(string claimGroupName) {
             try {
-                var roles = await roleManager.Roles.FirstOrDefaultAsync(e => e.Name == roleName);
+                var roles = await roleManager.Roles.FirstOrDefaultAsync(e => e.Name == claimGroupName);
                 return Ok(roles);
             } catch (Exception ex) {
                 return BadRequest(new { message = ex.GetBaseException().Message });
             }
         }
 
-        [HttpPost("{roleName}")]
-        public async Task<IActionResult> Post(string roleName) {
+        [HttpPost("{claimGroupName}")]
+        public async Task<IActionResult> Post(string claimGroupName) {
             try {
-                var existRole = await roleManager.FindByNameAsync(roleName);
+                var existRole = await roleManager.FindByNameAsync(claimGroupName);
                 if (existRole != null)
                     return NotFound(new { message = "Role already exist." });
 
-                var role = new IdentityRole(roleName);
+                var role = new IdentityRole(claimGroupName);
                 var result = await roleManager.CreateAsync(role);
                 if (result.Succeeded)
                     return Ok(role);
@@ -98,11 +97,11 @@ namespace Sale.Api.Controllers
         [HttpPut]
         public async Task<IActionResult> Put(RoleModifyRequestModel roleModifyRequestModel) {
             try {
-                var role = await roleManager.FindByNameAsync(roleModifyRequestModel.RoleName);
+                var role = await roleManager.FindByNameAsync(roleModifyRequestModel.ClaimGroupName);
                 if (role == null)
                     return NotFound(new { message = "Role not found." });
 
-                role.Name = roleModifyRequestModel.UpdatedRoleName;
+                role.Name = roleModifyRequestModel.UpdatedClaimGroupName;
                 var result = await roleManager.UpdateAsync(role);
                 if (result.Succeeded)
                     return Ok(role);
@@ -114,12 +113,12 @@ namespace Sale.Api.Controllers
         }
 
         [HttpDelete]
-        [Route("{roleName}")]
-        public async Task<IActionResult> Delete(string roleName) {
+        [Route("{claimGroupName}")]
+        public async Task<IActionResult> Delete(string claimGroupName) {
             try {
-                var role = await roleManager.FindByNameAsync(roleName);
+                var role = await roleManager.FindByNameAsync(claimGroupName);
                 if (role == null)
-                    return NotFound(new { message = "Role not found." });
+                    return NotFound(new { message = "Claim group not found." });
 
                 var result = await roleManager.DeleteAsync(role);
                 if (result.Succeeded)

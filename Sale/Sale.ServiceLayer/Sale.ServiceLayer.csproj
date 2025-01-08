@@ -12,6 +12,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\Sale.Database\Sale.Database.csproj" />
+	  <ProjectReference Include="..\Sale.Model\Sale.Model.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Reference Include="CoffeeCode.DataBase">
 			<HintPath>D:\Projects\References\CoffeeCode.DataBase.dll</HintPath>
 		</Reference>
