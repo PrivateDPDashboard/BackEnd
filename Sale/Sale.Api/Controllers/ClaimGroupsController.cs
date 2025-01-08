@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Sale.Api.ApiModel;
 using Sale.Api.ApiModel.Role;
+using Sale.Security;
 
 namespace Sale.Api.Controllers
 {
@@ -29,7 +30,7 @@ namespace Sale.Api.Controllers
         }
 
         [HttpPost("GetClaimGroups")]
-        //[Authorize(Policy = Policies.ManageUsersPolicy)]
+        [Authorize(Policy = Policies.ManageClaimGroupsPolicy)]
         public async Task<IActionResult> GetClaimGroups(DataTableGetRequestModel requestModel) {
             try {
                 var dataTableParamResult = new DataTableParamResult(requestModel.DataTableParam);
@@ -67,6 +68,7 @@ namespace Sale.Api.Controllers
 
         [HttpGet]
         [Route("Get/{claimGroupName}")]
+        [Authorize(Policy = Policies.ManageClaimGroupsPolicy)]
         public async Task<IActionResult> Get(string claimGroupName) {
             try {
                 var roles = await roleManager.Roles.FirstOrDefaultAsync(e => e.Name == claimGroupName);
@@ -77,6 +79,7 @@ namespace Sale.Api.Controllers
         }
 
         [HttpPost("{claimGroupName}")]
+        [Authorize(Policy = Policies.ManageClaimGroupsPolicy)]
         public async Task<IActionResult> Post(string claimGroupName) {
             try {
                 var existRole = await roleManager.FindByNameAsync(claimGroupName);
@@ -95,6 +98,7 @@ namespace Sale.Api.Controllers
         }
 
         [HttpPut]
+        [Authorize(Policy = Policies.ManageClaimGroupsPolicy)]
         public async Task<IActionResult> Put(RoleModifyRequestModel roleModifyRequestModel) {
             try {
                 var role = await roleManager.FindByNameAsync(roleModifyRequestModel.ClaimGroupName);
@@ -114,6 +118,7 @@ namespace Sale.Api.Controllers
 
         [HttpDelete]
         [Route("{claimGroupName}")]
+        [Authorize(Policy = Policies.ManageClaimGroupsPolicy)]
         public async Task<IActionResult> Delete(string claimGroupName) {
             try {
                 var role = await roleManager.FindByNameAsync(claimGroupName);

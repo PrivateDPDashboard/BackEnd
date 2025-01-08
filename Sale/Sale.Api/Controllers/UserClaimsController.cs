@@ -9,6 +9,7 @@ using System.Security.Claims;
 using Sale.Database.Entities;
 using Sale.Api.ApiModel.User.UserClaim;
 using Sale.Model.Base;
+using Sale.Security;
 
 namespace Sale.Api.Controllers
 {
@@ -19,6 +20,7 @@ namespace Sale.Api.Controllers
     {
         [HttpGet]
         [Route("GetByUserId/{userId}")]
+        [Authorize(Policy = Policies.ManageUsersPolicy)]
         public async Task<IActionResult> GetByUserId(string userId) {
             try {
                 var user = await userManager.FindByIdAsync(userId);
@@ -33,6 +35,7 @@ namespace Sale.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = Policies.ManageUsersPolicy)]
         public async Task<IActionResult> Post(List<UserClaimCreateRequestModel> requestModel) {
             try {
                 var userId = requestModel.FirstOrDefault()?.UserId;
@@ -53,6 +56,7 @@ namespace Sale.Api.Controllers
         }
 
         [HttpPut]
+        [Authorize(Policy = Policies.ManageUsersPolicy)]
         public async Task<IActionResult> Put(List<UserClaimModifyRequestModel> requestModel) {
             try {
                 var userId = requestModel.FirstOrDefault()?.UserId;
@@ -79,6 +83,7 @@ namespace Sale.Api.Controllers
 
         [HttpDelete]
         [Route("{userId}")]
+        [Authorize(Policy = Policies.ManageUsersPolicy)]
         public async Task<IActionResult> Delete(string userId) {
             try {
                 var user = await userManager.FindByIdAsync(userId);

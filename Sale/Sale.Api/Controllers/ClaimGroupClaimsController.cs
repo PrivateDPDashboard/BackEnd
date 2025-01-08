@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Text;
 using Sale.Model.Base;
 using Microsoft.EntityFrameworkCore;
+using Sale.Security;
 
 namespace Sale.Api.Controllers
 {
@@ -19,6 +20,7 @@ namespace Sale.Api.Controllers
     {
         [HttpGet]
         [Route("GetByClaimGroupName/{claimGroupName}")]
+        [Authorize(Policy = Policies.ManageClaimGroupsPolicy)]
         public async Task<IActionResult> GetByUserId(string claimGroupName) {
             try {
                 var role = await roleManager.Roles.FirstOrDefaultAsync(e => e.Name == claimGroupName);
@@ -34,6 +36,7 @@ namespace Sale.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = Policies.ManageClaimGroupsPolicy)]
         public async Task<IActionResult> Post(string claimGroupName, List<ClaimModel> requestModel) {
             try {
                 if (string.IsNullOrWhiteSpace(claimGroupName))
@@ -43,18 +46,28 @@ namespace Sale.Api.Controllers
                 if (role == null)
                     return BadRequest();
 
-                var claims = requestModel.Select(e => new Claim(e.ClaimType, e.ClaimValue));
+                var errors = new StringBuilder();
 
+                var claims = requestModel.Select(e => new Claim(e.ClaimType, e.ClaimValue));
                 foreach (var claim in claims) {
-                    await roleManager.AddClaimAsync(role, claim);
+                    var result = await roleManager.AddClaimAsync(role, claim);
+                    if (!result.Succeeded) {
+                        errors.AppendLine(string.Join(Environment.NewLine, result.Errors.Select(e => e.Description)));
+                    }
                 }
-                return Ok(claims);
+
+                if (errors.Length > 0) {
+                    return BadRequest(new { message = errors });
+                }
+
+                return Ok(requestModel);
             } catch (Exception ex) {
                 return BadRequest(new { message = ex.GetBaseException().Message });
             }
         }
 
         [HttpPut]
+        [Authorize(Policy = Policies.ManageClaimGroupsPolicy)]
         public async Task<IActionResult> Put(string claimGroupName, List<ClaimModel> requestModel) {
             try {
                 if (string.IsNullOrWhiteSpace(claimGroupName))
@@ -97,16 +110,25 @@ namespace Sale.Api.Controllers
 
         [HttpDelete]
         [Route("{claimGroupName}")]
+        [Authorize(Policy = Policies.ManageClaimGroupsPolicy)]
         public async Task<IActionResult> Delete(string claimGroupName) {
             try {
                 var role = await roleManager.FindByNameAsync(claimGroupName);
                 if (role == null)
                     return BadRequest();
 
+                var errors = new StringBuilder();
+
                 var existingClaims = await roleManager.GetClaimsAsync(role);
                 foreach (var existingClaim in existingClaims) {
-                    await roleManager.RemoveClaimAsync(role, existingClaim);
+                    var result = await roleManager.RemoveClaimAsync(role, existingClaim);
+                    if (!result.Succeeded) {
+                        errors.Append(string.Join(Environment.NewLine, result.Errors.Select(e => e.Description)));
+                    }
                 }
+
+                if (errors.Length > 0)
+                    return BadRequest(new { message = errors.ToString() });
 
                 return Ok();
             } catch (Exception ex) {

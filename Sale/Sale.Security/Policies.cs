@@ -5,6 +5,6 @@
         public const string ManageUsersPolicy = nameof(ManageUsersPolicy);
         public const string ResetUserPasswordPolicy = nameof(ResetUserPasswordPolicy);
 
-        public const string ManageRolesPolicy = nameof(ManageRolesPolicy);
+        public const string ManageClaimGroupsPolicy = nameof(ManageClaimGroupsPolicy);
     }
 }

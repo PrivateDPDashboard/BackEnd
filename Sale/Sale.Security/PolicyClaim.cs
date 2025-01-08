@@ -14,7 +14,7 @@ namespace Sale.Security
             [
                 new(Policies.ManageUsersPolicy, Claims.ManageUsersPolicyClaim.ClaimType,Claims.ManageUsersPolicyClaim.ClaimValue),
                 new(Policies.ResetUserPasswordPolicy, Claims.ResetUserPasswordPolicyClaim.ClaimType,Claims.ResetUserPasswordPolicyClaim.ClaimValue),
-                new(Policies.ManageRolesPolicy, Claims.ManageRolesPolicyClaim.ClaimType,Claims.ManageRolesPolicyClaim.ClaimValue),
+                new(Policies.ManageClaimGroupsPolicy, Claims.ManageClaimGroupsPolicyClaim.ClaimType,Claims.ManageClaimGroupsPolicyClaim.ClaimValue),
             ];
         }
 

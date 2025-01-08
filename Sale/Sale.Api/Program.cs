@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using CoffeeCode.DataBase.Extensions;
@@ -69,8 +70,8 @@ namespace Sale.Api
                     ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"] ?? ""))
                 };
-                options.Events = new JwtBearerEvents() {
-                    OnMessageReceived = (context) => {
+                options.Events = new JwtBearerEvents {
+                    OnMessageReceived = context => {
                         if (context.Request.Cookies.ContainsKey("token")) {
                             context.Token = context.Request.Cookies["token"];
                         }
@@ -86,28 +87,6 @@ namespace Sale.Api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c => {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Sales API", Version = "v1" });
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme() {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Description = "Enter 'Bearer' [space] and then your valid token in the text input below.\r\n\r\nExample: \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\"",
-                });
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        new string[] {}
-                    }
-                });
             });
 
             var app = builder.Build();
@@ -127,7 +106,7 @@ namespace Sale.Api
                     var result = userManager.CreateAsync(identityUser, "Admin@123").Result;
                     if (result.Succeeded) {
                         var claims = Claims.GetAll();
-                        _ = userManager.AddClaimsAsync(identityUser, claims.Select(e => new System.Security.Claims.Claim(e.ClaimType, e.ClaimValue))).Result;
+                        _ = userManager.AddClaimsAsync(identityUser, claims.Select(e => new Claim(e.ClaimType, e.ClaimValue))).Result;
                     }
                 }
             }

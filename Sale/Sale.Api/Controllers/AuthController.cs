@@ -49,7 +49,7 @@ namespace Sale.Api.Controllers
                 var token = new JwtSecurityToken(
                     issuer: configuration["JWT:ValidIssuer"],
                     audience: configuration["JWT:ValidAudience"],
-                    expires: DateTime.UtcNow.AddMinutes(1),
+                    expires: DateTime.UtcNow.AddHours(12),
                     claims: claims,
                     signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                 );
